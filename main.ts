@@ -1,13 +1,15 @@
 import{readdirSync as R,readFileSync as F,mkdirSync as K,writeFileSync as W}from"node:fs";
 const I=process.env.MAKEFUN_INPUT_DIR??"/input",O=process.env.MAKEFUN_OUTPUT_DIR??"/output";
-// Opcode table: base-36 digit per opcode byte = pops*4+pushes; 'g' (16) = not an opcode.
+// Opcode table: base-36 digit per opcode byte = pops*4+pushes; 'g' (16) = not an opcode -> trap 5.
+// Digit d: pops=d>>2, pushes=d&3. Opcodes past the table end trap likewise (T[a] undefined -> NaN).
 const T="01146abfgggggggg999999959995999g999ggggggggggggg04400ggggggggggg58gggggggggggggg4414";
+const MAX_STEPS=1e6; // step limit (ISA: trap 10 past 1,000,000 steps)
 function run(p,q){
 const n=p.length,S=new Int32Array(256),C=new Int32Array(64),M=new Int32Array(256),o=new Uint8Array(65536);
 let s=0,c=0,y=0,i=0,t=0,l=0;
 const e=x=>[x,o.slice(0,l)];
 for(;;){
-if(t===1e6)return e(10);
+if(t===MAX_STEPS)return e(10);
 if(y<0||y>=n)return e(9);
 const a=p[y],v=parseInt(T[a],36);
 if(v>15||v!==v)return e(5);
